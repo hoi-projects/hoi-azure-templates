@@ -1,0 +1,335 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "serverName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Server Name",
+        "placeholder": "e.g., my-postgresql-server",
+        "toolTip": "Globally unique name for the PostgreSQL server (3-63 characters, lowercase letters, numbers, hyphens only)",
+        "constraints": {
+          "required": true,
+          "validations": [
+            {
+              "regex": "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$",
+              "message": "3-63 characters, lowercase letters, numbers, and hyphens only. Cannot start or end with a hyphen."
+            }
+          ]
+        }
+      },
+      {
+        "name": "administratorLogin",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Administrator Login",
+        "placeholder": "e.g., pgadmin",
+        "toolTip": "Database administrator username (1-63 characters, letters and numbers only)",
+        "constraints": {
+          "required": true,
+          "validations": [
+            {
+              "regex": "^[a-zA-Z][a-zA-Z0-9]{0,62}$",
+              "message": "Must start with a letter, 1-63 characters, letters and numbers only."
+            }
+          ]
+        }
+      },
+      {
+        "name": "administratorLoginPassword",
+        "type": "Microsoft.Common.PasswordBox",
+        "label": {
+          "password": "Administrator Password",
+          "confirmPassword": "Confirm Password"
+        },
+        "toolTip": "Minimum 8 characters \u2014 must include uppercase, lowercase, number, and special character (@$!%*?&)",
+        "constraints": {
+          "required": true,
+          "validations": [
+            {
+              "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[a-zA-Z\\d@$!%*?&]{8,128}$",
+              "message": "8-128 characters. Must include uppercase, lowercase, number, and special character (@$!%*?&)."
+            }
+          ]
+        },
+        "options": {
+          "hideConfirmation": false
+        }
+      }
+    ],
+    "steps": [
+      {
+        "name": "databaseSettings",
+        "label": "Database Settings",
+        "elements": [
+          {
+            "name": "postgresqlVersion",
+            "type": "Microsoft.Common.DropDown",
+            "label": "PostgreSQL Version",
+            "defaultValue": "PostgreSQL 16",
+            "toolTip": "Select the PostgreSQL version. Version 16 is recommended.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "PostgreSQL 16 (Recommended)",
+                  "value": "16"
+                },
+                {
+                  "label": "PostgreSQL 15",
+                  "value": "15"
+                },
+                {
+                  "label": "PostgreSQL 14",
+                  "value": "14"
+                }
+              ]
+            }
+          },
+          {
+            "name": "databaseName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Database Name",
+            "placeholder": "e.g., myappdb",
+            "defaultValue": "postgres",
+            "toolTip": "Name of the initial PostgreSQL database",
+            "constraints": {
+              "required": false,
+              "validations": [
+                {
+                  "regex": "^[a-zA-Z_][a-zA-Z0-9_]{0,62}$",
+                  "message": "Must start with a letter or underscore, 1-63 characters, letters, numbers, and underscores only."
+                }
+              ]
+            }
+          },
+          {
+            "name": "skuInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Select a SKU that matches your workload. Burstable SKUs (B-series) are ideal for dev/test. General Purpose (D-series) for production. Memory Optimized (E-series) for high-performance workloads. The pricing tier is set automatically based on your SKU selection."
+            }
+          },
+          {
+            "name": "skuName",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Compute SKU",
+            "defaultValue": "Standard_D2ds_v4 \u2014 General Purpose, 2 vCores, 8 GB RAM",
+            "toolTip": "Select the compute SKU. The pricing tier (Burstable / General Purpose / Memory Optimized) is set automatically.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "Standard_B1ms \u2014 Burstable, 1 vCore, 0.5 GB RAM (Dev/Test)",
+                  "value": "Standard_B1ms"
+                },
+                {
+                  "label": "Standard_B2s \u2014 Burstable, 2 vCores, 4 GB RAM (Dev/Test)",
+                  "value": "Standard_B2s"
+                },
+                {
+                  "label": "Standard_D2ds_v4 \u2014 General Purpose, 2 vCores, 8 GB RAM",
+                  "value": "Standard_D2ds_v4"
+                },
+                {
+                  "label": "Standard_D4ds_v4 \u2014 General Purpose, 4 vCores, 16 GB RAM",
+                  "value": "Standard_D4ds_v4"
+                },
+                {
+                  "label": "Standard_D8ds_v4 \u2014 General Purpose, 8 vCores, 32 GB RAM",
+                  "value": "Standard_D8ds_v4"
+                },
+                {
+                  "label": "Standard_E2ds_v4 \u2014 Memory Optimized, 2 vCores, 16 GB RAM",
+                  "value": "Standard_E2ds_v4"
+                },
+                {
+                  "label": "Standard_E4ds_v4 \u2014 Memory Optimized, 4 vCores, 32 GB RAM",
+                  "value": "Standard_E4ds_v4"
+                },
+                {
+                  "label": "Standard_E8ds_v4 \u2014 Memory Optimized, 8 vCores, 64 GB RAM",
+                  "value": "Standard_E8ds_v4"
+                }
+              ]
+            }
+          },
+          {
+            "name": "storageSizeGB",
+            "type": "Microsoft.Common.Slider",
+            "min": 32,
+            "max": 1024,
+            "step": 32,
+            "label": "Storage Size (GB)",
+            "defaultValue": 32,
+            "toolTip": "Database storage size (32\u20131024 GB). Can be increased later but not decreased.",
+            "constraints": {
+              "required": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "backupAndHA",
+        "label": "Backup & High Availability",
+        "elements": [
+          {
+            "name": "backupRetentionDays",
+            "type": "Microsoft.Common.Slider",
+            "min": 7,
+            "max": 35,
+            "step": 1,
+            "label": "Backup Retention (Days)",
+            "defaultValue": 7,
+            "toolTip": "Number of days to retain automated backups (7\u201335)",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "geoRedundantBackup",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Geo-Redundant Backup",
+            "defaultValue": "Disabled",
+            "toolTip": "Replicate backups to a paired region for disaster recovery. Not available with Burstable SKUs.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "Disabled",
+                  "value": "Disabled"
+                },
+                {
+                  "label": "Enabled",
+                  "value": "Enabled"
+                }
+              ]
+            }
+          },
+          {
+            "name": "highAvailability",
+            "type": "Microsoft.Common.DropDown",
+            "label": "High Availability",
+            "defaultValue": "Disabled",
+            "toolTip": "Automatic failover to a standby replica. Not available with Burstable SKUs.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "Disabled",
+                  "value": "Disabled"
+                },
+                {
+                  "label": "Zone Redundant (standby in different AZ)",
+                  "value": "ZoneRedundant"
+                },
+                {
+                  "label": "Same Zone (standby in same AZ)",
+                  "value": "SameZone"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "networkSettings",
+        "label": "Network Settings",
+        "elements": [
+          {
+            "name": "networkInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "A new Virtual Network and subnet will be created and delegated exclusively to this PostgreSQL server. A private DNS zone will be linked automatically."
+            }
+          },
+          {
+            "name": "virtualNetworkName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Virtual Network Name",
+            "defaultValue": "postgresql-vnet",
+            "toolTip": "Name of the new Virtual Network",
+            "constraints": {
+              "required": true,
+              "validations": [
+                {
+                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_.]{0,78}[a-zA-Z0-9_]$",
+                  "message": "2-80 characters, letters, numbers, hyphens, underscores, and periods."
+                }
+              ]
+            }
+          },
+          {
+            "name": "vnetAddressPrefix",
+            "type": "Microsoft.Common.TextBox",
+            "label": "VNet Address Space (CIDR)",
+            "defaultValue": "10.0.0.0/16",
+            "toolTip": "Address space for the virtual network (e.g. 10.0.0.0/16)",
+            "constraints": {
+              "required": true,
+              "validations": [
+                {
+                  "regex": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+                  "message": "Must be a valid CIDR range (e.g. 10.0.0.0/16)."
+                }
+              ]
+            }
+          },
+          {
+            "name": "subnetName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Subnet Name",
+            "defaultValue": "postgresql-subnet",
+            "toolTip": "Name of the subnet (will be delegated to PostgreSQL)",
+            "constraints": {
+              "required": true,
+              "validations": [
+                {
+                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_.]{0,78}[a-zA-Z0-9_]$",
+                  "message": "2-80 characters, letters, numbers, hyphens, underscores, and periods."
+                }
+              ]
+            }
+          },
+          {
+            "name": "subnetAddressPrefix",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Subnet Address Prefix (CIDR)",
+            "defaultValue": "10.0.0.0/24",
+            "toolTip": "Must be within the VNet address space (e.g. 10.0.0.0/24)",
+            "constraints": {
+              "required": true,
+              "validations": [
+                {
+                  "regex": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+                  "message": "Must be a valid CIDR range (e.g. 10.0.0.0/24)."
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "location": "[location()]",
+      "serverName": "[basics('serverName')]",
+      "administratorLogin": "[basics('administratorLogin')]",
+      "administratorLoginPassword": "[basics('administratorLoginPassword')]",
+      "postgresqlVersion": "[steps('databaseSettings').postgresqlVersion]",
+      "skuName": "[steps('databaseSettings').skuName]",
+      "storageSizeGB": "[steps('databaseSettings').storageSizeGB]",
+      "backupRetentionDays": "[steps('backupAndHA').backupRetentionDays]",
+      "geoRedundantBackup": "[steps('backupAndHA').geoRedundantBackup]",
+      "highAvailability": "[steps('backupAndHA').highAvailability]",
+      "virtualNetworkName": "[steps('networkSettings').virtualNetworkName]",
+      "vnetAddressPrefix": "[steps('networkSettings').vnetAddressPrefix]",
+      "subnetName": "[steps('networkSettings').subnetName]",
+      "postgresqlSubnetPrefix": "[steps('networkSettings').subnetAddressPrefix]"
+    }
+  }
+}
