@@ -1,0 +1,7 @@
+name: secure-linux-baseline
+metadata:
+  template: hoi-projects/hoi-azure-templates/bases/secure-linux-baseline@0.0.1
+infra:
+  provider: bicep
+  path: .
+  module: main
