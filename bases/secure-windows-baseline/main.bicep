@@ -1,12 +1,12 @@
-@description('Location for all resources.')
+@description('Azure region for all resources. Defaults to the resource group location.')
 param location string = resourceGroup().location
 
-@description('Prefix for all resource names.')
+@description('Short prefix used to name all resources. 2–10 lowercase characters.')
 @minLength(2)
 @maxLength(10)
 param prefix string = 'hoi'
 
-@description('Windows Server or Desktop SKU to deploy.')
+@description('Windows SKU to deploy. Server editions for workloads; Windows 11 editions for desktop/developer use.')
 @allowed([
   '2022-datacenter-azure-edition'
   '2025-datacenter-azure-edition'
@@ -15,18 +15,22 @@ param prefix string = 'hoi'
 ])
 param windowsSku string = '2025-datacenter-azure-edition'
 
-@description('VM size.')
+@description('Azure VM size SKU. Must be available in the target region. Example: Standard_B2s_v2, Standard_D4s_v5.')
+@minLength(1)
 param vmSize string = 'Standard_B2s_v2'
 
-@description('Admin username for the VM.')
+@description('Administrator username for the Windows VM. Cannot be reserved words such as administrator, admin, or guest.')
+@minLength(1)
+@maxLength(20)
 param adminUsername string = 'azureuser'
 
-@description('Admin password for the VM.')
+@description('Administrator password for the Windows VM. Must be 12–123 characters and meet Azure complexity requirements.')
 @secure()
 @minLength(12)
+@maxLength(123)
 param adminPassword string
 
-@description('Enable Key Vault purge protection. Recommended true for production.')
+@description('Enable Key Vault purge protection. Must be true for production workloads (MCSB DP-8). Set false only for testing — allows Key Vault deletion without waiting 90 days.')
 param enablePurgeProtection bool = true
 
 var addressPrefix = '10.0.0.0/16'

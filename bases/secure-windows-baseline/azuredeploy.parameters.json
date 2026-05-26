@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminPassword": {
+      "value": ""
+    },
+    "prefix": {
+      "value": "hoi"
+    },
+    "windowsSku": {
+      "value": "2025-datacenter-azure-edition"
+    },
+    "vmSize": {
+      "value": "Standard_B2s_v2"
+    },
+    "adminUsername": {
+      "value": "azureuser"
+    },
+    "enablePurgeProtection": {
+      "value": false
+    }
+  }
+}
