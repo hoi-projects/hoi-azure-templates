@@ -12,7 +12,7 @@
       "value": "2025-datacenter-azure-edition"
     },
     "vmSize": {
-      "value": "Standard_B2s_v2"
+      "value": "Standard_B2s"
     },
     "adminUsername": {
       "value": "azureuser"

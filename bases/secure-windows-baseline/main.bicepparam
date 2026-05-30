@@ -6,7 +6,7 @@ using './main.bicep'
 param location = readEnvironmentVariable('AZURE_LOCATION', 'uksouth')
 param prefix = 'hoi'
 param windowsSku = '2025-datacenter-azure-edition'
-param vmSize = 'Standard_B2s_v2'
+param vmSize = 'Standard_B2s'
 param adminUsername = 'azureuser'
 param adminPassword = readEnvironmentVariable('VM_ADMIN_PASSWORD', '')
 param enablePurgeProtection = false
